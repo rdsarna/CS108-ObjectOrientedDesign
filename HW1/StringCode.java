@@ -1,7 +1,6 @@
 package assign1;
 
 import java.util.HashSet;
-import java.util.Set;
 
 // CS108 HW1 -- String static methods
 

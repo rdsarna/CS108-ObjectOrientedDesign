@@ -39,7 +39,20 @@ public class CharGrid {
 	}
 	
 	/**
-	 * Returns the count of '+' figures in the grid (see handout).
+	 * Returns the count of '+' figures in the grid.
+	 * A + is made of single character in the middle and four "arms" extending 
+	 * out up, down, left, and right. The arms start with the middle char and 
+	 * extend until the first different character or grid edge. To count as a +, 
+	 * all the arms should have two or more chars and should all be the same 
+	 * length. For example, the grid below contains exactly 2 +'s...
+	 *	p
+	 *	p x
+	 *	ppppp xxx
+	 *	p y x
+	 *	p yyy
+	 *	zzzzzyzzz
+	 *	xx y
+	 * 
 	 * @return number of + in grid
 	 */
 	public int countPlus() {
@@ -53,28 +66,37 @@ public class CharGrid {
 	}
 	
 	/**
-	 * Helper method for countPlus that returns true iff the char 
+	 * Recursive helper method for countPlus that returns true iff the char 
 	 * passed as the argument makes a plus shape on the grid. 
 	 */
 	private boolean isPlus(char ch, int i, int j, int position) {
+		int newI1 = i - position, newI2 = i + position;
+		int newJ1 = j - position, newJ2 = j + position;
+		
+		/* Base case - 
+		 * If there has been even a single step where the char had arms on all
+		 * sides then check if stops growing outward uniformly or if any one
+		 * arm longer than the others. If it has stopped growing uniformly then
+		 * it makes a plus hence return true. Otherwise its not a plus hence false.
+		 */
 		if (position > 1) {
-			if (((i-position >= 0) && (grid[i-position][j] != ch)) &&
-					((j-position >= 0) && (grid[i][j-position] != ch))) {
-				if (((i+position < grid.length) && (grid[i+position][j] != ch)) &&
-						((j+position < grid[0].length) && (grid[i][j+position] != ch)))
+			if ((((newI1 >= 0) && (grid[newI1][j] != ch)) || (newI1 < 0)) &&
+					(((newJ1 >= 0) && (grid[i][newJ1] != ch)) || (newJ1 < 0))) {
+				if ((((newI2 < grid.length) && (grid[newI2][j] != ch)) || (newI2 >= grid.length)) &&
+						(((newJ2 < grid[0].length) && (grid[i][newJ2] != ch)) || (newJ2 >= grid[0].length)))
 					return true;
 			}
-			else if ((i-position < 0) && (j-position < 0)) {
-				if ((i+position >= grid.length) && (j+position >= grid[0].length))
-					return true;
-			}
-			else return false;
 		}
 		
-		if (((i-position >= 0) && (grid[i-position][j] == ch)) &&
-				((j-position >= 0) && (grid[i][j-position] == ch))) {
-			if (((i+position < grid.length) && (grid[i+position][j] == ch)) &&
-					((j+position < grid[0].length) && (grid[i][j+position] == ch)))
+		/* Recursive Step -
+		 * Check if the char ch is spreading one step outwards considering i, j
+		 * as the center. All arms should have the same char for this to be
+		 * true. If it is true then recursively check the next step outwards.
+		 */
+		if (((newI1 >= 0) && (grid[newI1][j] == ch)) &&
+				((newJ1 >= 0) && (grid[i][newJ1] == ch))) {
+			if (((newI2 < grid.length) && (grid[newI2][j] == ch)) &&
+					((newJ2 < grid[0].length) && (grid[i][newJ2] == ch)))
 				return isPlus(ch, i, j, ++position);
 		}
 		return false;
