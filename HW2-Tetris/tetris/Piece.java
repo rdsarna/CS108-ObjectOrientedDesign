@@ -35,12 +35,49 @@ public class Piece {
 	 Makes its own copy of the array and the TPoints inside it.
 	*/
 	public Piece(TPoint[] points) {
-		// YOUR CODE HERE
+		body = Arrays.copyOf(points, points.length);
+		width = computeWidthHeight(body, 'x');
+		height = computeWidthHeight(body, 'y');
+		skirt = computeSkirt(body);
+		next = null;
 	}
 	
+	/*
+	 * The skirt stores the lowest y value that appears in the body
+	 * for each x value in the piece. The x values are the index into
+	 * the array returned.
+	 */
+	private int[] computeSkirt(TPoint[] body2) {
+		int[] result = new int[this.getWidth()];
+		
+		int tempMax = 5; // arbitrary value to assign result array
+		for (int i = 0; i < result.length; i++)
+			result[i] = tempMax;
+		
+		for (int i = 0; i < body2.length; i++) {
+			int currIndex = body2[i].x;
+			if (result[currIndex] > body2[i].y)
+				result[currIndex] = body2[i].y; 
+		}
+		return result;
+	}
 
-	
-	
+	/*
+	 * Calculates the width or height of the piece represented by the
+	 * body2 array of TPoints. If c is 'x' then the width is returned
+	 * otherwise height is returned.
+	 */
+	private int computeWidthHeight(TPoint[] body2, char c) {
+		int maxX = 0;
+		int maxY = 0;
+		for (int i = 0; i < body2.length; i++) {
+			if (body2[i].x > maxX) maxX = body2[i].x;
+			if (body2[i].y > maxY) maxY = body2[i].y;
+		}
+		return c == 'x' ? (maxX + 1) : (maxY + 1);
+	}
+
+
 	/**
 	 * Alternate constructor, takes a String with the x,y body points
 	 * all separated by spaces, such as "0 0  1 0  2 0	1 1".
