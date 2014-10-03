@@ -125,7 +125,19 @@ public class Piece {
 	 rotated from the receiver.
 	 */
 	public Piece computeNextRotation() {
-		return null; // YOUR CODE HERE
+		int maxY = this.getHeight() - 1;
+		int maxX = this.getWidth() - 1;
+
+		TPoint[] result = new TPoint[this.body.length];
+		for (int i = 0; i < body.length; i++) {
+			if (body[i].y == maxY)
+				result[i] = new TPoint(0, body[i].x);
+			else if (body[i].y == 0)
+				result[i] = new TPoint(maxY, body[i].x);
+			else
+				result[i] = new TPoint(body[i].y, body[i].x);
+		}
+		return new Piece(result);
 	}
 
 	/**
@@ -157,8 +169,7 @@ public class Piece {
 		if (!(obj instanceof Piece)) return false;
 		Piece other = (Piece)obj;
 		
-		// YOUR CODE HERE
-		return true;
+		return Arrays.deepEquals(this.body, other.body);
 	}
 
 
@@ -224,7 +235,12 @@ public class Piece {
 	 to the first piece.
 	*/
 	private static Piece makeFastRotations(Piece root) {
-		return null; // YOUR CODE HERE
+		Piece newOne = root;
+		while (true) {
+			newOne.next = newOne.computeNextRotation();
+			newOne = newOne.next;
+			if (newOne.equals(root)) return newOne;
+		}
 	}
 	
 	

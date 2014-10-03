@@ -19,6 +19,7 @@ public class PieceTest {
 	private Piece pyr1, pyr2, pyr3, pyr4;
 	private Piece s, sRotated;
 	private Piece l1, s2, l;
+	private Piece[] pieces;
 
 	@Before
 	public void setUp() throws Exception {
@@ -26,14 +27,16 @@ public class PieceTest {
 		pyr1 = new Piece(Piece.PYRAMID_STR);
 		l1 = new Piece(Piece.L1_STR);
 		s2 = new Piece(Piece.S2_STR);
-//		pyr2 = pyr1.computeNextRotation();
-//		pyr3 = pyr2.computeNextRotation();
-//		pyr4 = pyr3.computeNextRotation();
+		pyr2 = pyr1.computeNextRotation();
+		pyr3 = pyr2.computeNextRotation();
+		pyr4 = pyr3.computeNextRotation();
 		
 		s = new Piece(Piece.S1_STR);
-//		sRotated = s.computeNextRotation();
+		sRotated = s.computeNextRotation();
 		
 		l = new Piece(Piece.STICK_STR);
+		
+		pieces = Piece.getPieces();
 	}
 	
 	// Here are some sample tests to get you started
@@ -50,12 +53,16 @@ public class PieceTest {
 		
 		// Now try after rotation
 		// Effectively we're testing size and rotation code here
-//		assertEquals(2, pyr2.getWidth());
-//		assertEquals(3, pyr2.getHeight());
+		assertEquals(2, pyr2.getWidth());
+		assertEquals(3, pyr2.getHeight());
 		
 		// Now try with some other piece, made a different way
 		assertEquals(1, l.getWidth());
 		assertEquals(4, l.getHeight());
+		
+		// Testing getPieces
+		assertEquals(1, pieces[0].getWidth());
+		assertEquals(4, pieces[0].getHeight());
 	}
 	
 	
@@ -68,10 +75,10 @@ public class PieceTest {
 		assertTrue(Arrays.equals(new int[] {0, 0}, l1.getSkirt()));
 		assertTrue(Arrays.equals(new int[] {1, 0, 0}, s2.getSkirt()));
 		assertTrue(Arrays.equals(new int[] {0}, l.getSkirt()));
-//		assertTrue(Arrays.equals(new int[] {1, 0, 1}, pyr3.getSkirt()));
+		assertTrue(Arrays.equals(new int[] {1, 0, 1}, pyr3.getSkirt()));
 		
-//		assertTrue(Arrays.equals(new int[] {0, 0, 1}, s.getSkirt()));
-//		assertTrue(Arrays.equals(new int[] {1, 0}, sRotated.getSkirt()));
+		assertTrue(Arrays.equals(new int[] {0, 0, 1}, s.getSkirt()));
+		assertTrue(Arrays.equals(new int[] {1, 0}, sRotated.getSkirt()));
 	}
 	
 	
