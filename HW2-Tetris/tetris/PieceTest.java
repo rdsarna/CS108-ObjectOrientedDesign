@@ -17,8 +17,8 @@ public class PieceTest {
 	// pyramid and s pieces in instance variables
 	// that can be used in tests.
 	private Piece pyr1, pyr2, pyr3, pyr4;
-	private Piece s, sRotated;
-	private Piece l1, s2, l;
+	private Piece s, sRotated, sqr, sqrRotated;
+	private Piece l1, s2, l, stickRotated, l1Rotated, stickRotated2;
 	private Piece[] pieces;
 
 	@Before
@@ -37,6 +37,12 @@ public class PieceTest {
 		l = new Piece(Piece.STICK_STR);
 		
 		pieces = Piece.getPieces();
+		stickRotated = pieces[0].fastRotation();
+		l1Rotated = pieces[1].fastRotation();
+		stickRotated2 = stickRotated.fastRotation();
+
+		sqr = pieces[5];
+		sqrRotated = sqr.fastRotation();
 	}
 	
 	// Here are some sample tests to get you started
@@ -63,6 +69,21 @@ public class PieceTest {
 		// Testing getPieces
 		assertEquals(1, pieces[0].getWidth());
 		assertEquals(4, pieces[0].getHeight());
+
+		assertEquals(3, l1Rotated.getWidth());
+		assertEquals(2, l1Rotated.getHeight());
+
+		assertEquals(4, stickRotated.getWidth());
+		assertEquals(1, stickRotated.getHeight());
+		assertEquals(1, stickRotated2.getWidth());
+		assertEquals(4, stickRotated2.getHeight());
+
+		assertEquals(2, sqr.getWidth());
+		assertEquals(2, sqr.getHeight());
+		assertEquals(2, sqrRotated.getWidth());
+		assertEquals(2, sqrRotated.getHeight());
+		
+		assertEquals(pieces[0], stickRotated2.fastRotation().fastRotation());
 	}
 	
 	
@@ -79,6 +100,11 @@ public class PieceTest {
 		
 		assertTrue(Arrays.equals(new int[] {0, 0, 1}, s.getSkirt()));
 		assertTrue(Arrays.equals(new int[] {1, 0}, sRotated.getSkirt()));
+
+		assertTrue(Arrays.equals(new int[] {0, 0, 0, 0}, stickRotated.getSkirt()));
+
+		assertTrue(Arrays.equals(new int[] {0, 0}, sqr.getSkirt()));
+		assertTrue(Arrays.equals(new int[] {0, 0}, sqrRotated.getSkirt()));
 	}
 	
 	

@@ -126,7 +126,6 @@ public class Piece {
 	 */
 	public Piece computeNextRotation() {
 		int maxY = this.getHeight() - 1;
-		int maxX = this.getWidth() - 1;
 
 		TPoint[] result = new TPoint[this.body.length];
 		for (int i = 0; i < body.length; i++) {
@@ -169,6 +168,7 @@ public class Piece {
 		if (!(obj instanceof Piece)) return false;
 		Piece other = (Piece)obj;
 		
+		if (this == other) return true;
 		return Arrays.deepEquals(this.body, other.body);
 	}
 
@@ -238,8 +238,13 @@ public class Piece {
 		Piece newOne = root;
 		while (true) {
 			newOne.next = newOne.computeNextRotation();
-			newOne = newOne.next;
-			if (newOne.equals(root)) return newOne;
+			if (newOne.next.equals(root)) {
+				newOne.next = root;
+				return root;
+			}
+			else
+				newOne = newOne.next;
+			
 		}
 	}
 	
