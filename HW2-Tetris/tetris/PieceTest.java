@@ -83,7 +83,7 @@ public class PieceTest {
 		assertEquals(2, sqrRotated.getWidth());
 		assertEquals(2, sqrRotated.getHeight());
 		
-		assertEquals(pieces[0], stickRotated2.fastRotation().fastRotation());
+		assertEquals(pieces[0], stickRotated2);
 	}
 	
 	

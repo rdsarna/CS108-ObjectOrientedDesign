@@ -169,14 +169,16 @@ public class Piece {
 		Piece other = (Piece)obj;
 		
 		if (this == other) return true;
-		return Arrays.deepEquals(this.body, other.body);
+		Set<TPoint> thisSet = new HashSet<TPoint>(Arrays.asList(this.body));
+		Set<TPoint> otherSet = new HashSet<TPoint>(Arrays.asList(other.body));
+		return thisSet.equals(otherSet);
 	}
 
 
 	// String constants for the standard 7 tetris pieces
 	public static final String STICK_STR	= "0 0	0 1	 0 2  0 3";
 	public static final String L1_STR		= "0 0	0 1	 0 2  1 0";
-	public static final String L2_STR		= "0 0	1 0 1 1	 1 2";
+	public static final String L2_STR		= "0 0	1 0  1 1  1 2";
 	public static final String S1_STR		= "0 0	1 0	 1 1  2 1";
 	public static final String S2_STR		= "0 1	1 1  1 0  2 0";
 	public static final String SQUARE_STR	= "0 0  0 1  1 0  1 1";

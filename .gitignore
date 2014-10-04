@@ -1,14 +1,4 @@
-.metadata/*
-.settings/*
-.settings
-bin/*
-bin
-.classpath
-.project
-*.log
 *.class
-.lock
-.log
 
 *.pydevproject
 .metadata

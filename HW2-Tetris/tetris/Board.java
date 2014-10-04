@@ -17,6 +17,11 @@ public class Board	{
 	private boolean DEBUG = true;
 	boolean committed;
 	
+	//
+	private int[] widths, heights;
+	
+	int maxHeight; 
+	
 	
 	// Here a few trivial methods are provided:
 	
@@ -30,7 +35,9 @@ public class Board	{
 		grid = new boolean[width][height];
 		committed = true;
 		
-		// YOUR CODE HERE
+		widths = new int[height];
+		heights = new int[width];
+		maxHeight = 0;
 	}
 	
 	
@@ -89,7 +96,7 @@ public class Board	{
 	 The height is 0 if the column contains no blocks.
 	*/
 	public int getColumnHeight(int x) {
-		return 0; // YOUR CODE HERE
+		return heights[x];
 	}
 	
 	
@@ -98,7 +105,7 @@ public class Board	{
 	 the given row.
 	*/
 	public int getRowWidth(int y) {
-		 return 0; // YOUR CODE HERE
+		 return widths[y];
 	}
 	
 	
@@ -108,7 +115,9 @@ public class Board	{
 	 always return true.
 	*/
 	public boolean getGrid(int x, int y) {
-		return false; // YOUR CODE HERE
+		if (x < 0 || x > width || y < 0 || y > height)
+			return true;
+		return grid[x][y];
 	}
 	
 	

@@ -44,4 +44,9 @@ public class TPoint {
 	public String toString() {
 		return "(" + x + "," + y + ")";
 	}
+	
+	@Override
+	public int hashCode() {
+		return x * 2 + y * 22;
+	}
 }
