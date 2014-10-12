@@ -17,7 +17,16 @@ public class CharGrid {
 	}
 	
 	/**
-	 * Returns the area for the given char in the grid. (see handout).
+	 * Returns the area for the given char in the grid.
+	 * Given a char to look for, find the smallest rectangle
+	 *  that contains all the occurrences of that char and 
+	 *  return the rectangle's area. If there is only a single
+	 *  occurrence of the char, then the rectangle to enclose 
+	 *  it is 1x1 and the area is 1. For example, given the grid…
+	 *		abcd
+	 *		a cb
+	 *		xbca
+	 *	The area for 'a' is 12 (3 x 4) while for 'c' it is 3 (3 x 1). 
 	 * @param ch char to look for
 	 * @return area for given char
 	 */

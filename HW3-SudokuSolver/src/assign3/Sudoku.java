@@ -7,9 +7,99 @@ import java.util.*;
  * CS108 Stanford.
  */
 public class Sudoku {
-	// Provided grid data for main/testing
-	// The instance variable strategy is up to you.
 	
+	/* "Spot" inner class that represents a single spot
+	 * on the grid of the Sudoku game.
+	 */
+	private class Spot {
+		
+		/* Properties/fields of each individual Spot */
+		private int row, col;
+		private int value;
+		private int part;
+		
+		/* Stores all possible values for this empty Spot if
+		 * according to the rules of the game */
+		private HashSet<Integer> possibleValues;
+		
+		Spot(int x, int y, int val) {
+			row = x;
+			col = y;
+			value = val;
+			part = getPart(x, y);
+		
+			/* possibleValues is null if the Spot is not empty */
+			if (!isEmpty())
+				possibleValues = null;
+			else {
+				/* temporarily assign all 9 numbers */
+				possibleValues = new HashSet<>();
+				for (int i = 1; i <= Sudoku.SIZE; i++)
+					possibleValues.add(i);
+			}
+		}
+		
+		/* Sets the value for this Spot */
+		void setValue(int val) {
+			value = val;
+		}
+		
+		/* Returns the value of this Spot */
+		int getValue() {
+			return value;
+		}
+		
+		/* Returns the part of the grid where this Spot belongs */
+		int getPartForSpot() {
+			return part;
+		}
+		
+		/* Returns true iff this Spot is not filled */
+		boolean isEmpty() {
+			return value == 0;
+		}
+		
+		/* Returns a HashSet of all legal values that can be 
+		 * filled in this Spot.
+		 */
+		HashSet<Integer> getPossibleValues() {
+			if (value != 0) return null;
+
+			possibleValues.removeAll(valInRows.get(row));
+			possibleValues.removeAll(valInCols.get(col));
+			possibleValues.removeAll(valInParts.get(part));
+			return possibleValues;
+		}
+	}
+	
+	
+	private Spot[][] puzzleGrid;
+	private Spot[][] solutionGrid;
+	
+	/* The ivars to store the state of the grid.
+	 * valInRows:- has a HashSet at each index that stores all the filled
+	 * in values for that particular row
+	 * valInCols:- Same as valInRows but for the columns
+	 * valInParts:- For the 3x3 parts of the grid
+	 */
+	private ArrayList<HashSet<Integer>> valInRows, valInCols, valInParts;
+	
+	/* Parts of the grid each of size 3x3. Counting from the
+	 * top left to top right then the next row below.
+	 * 0 1 2
+	 * 3 4 5
+	 * 6 7 8
+	 */
+	private static final int PART1 = 0;
+	private static final int PART2 = 1;
+	private static final int PART3 = 2;
+	private static final int PART4 = 3;
+	private static final int PART5 = 4;
+	private static final int PART6 = 5;
+	private static final int PART7 = 6;
+	private static final int PART8 = 7;
+	private static final int PART9 = 8;
+		
 	// Provided easy 1 6 grid
 	// (can paste this text into the GUI too)
 	public static final int[][] easyGrid = Sudoku.stringsToGrid(
@@ -72,8 +162,8 @@ public class Sudoku {
 		}
 		return result;
 	}
-	
-	
+
+
 	/**
 	 * Given a single string containing 81 numbers, returns a 9x9 grid.
 	 * Skips all the non-numbers in the text.
@@ -121,9 +211,6 @@ public class Sudoku {
 	}
 
 
-	// Provided -- the deliverable main().
-	// You can edit to do easier cases, but turn in
-	// solving hardGrid.
 	public static void main(String[] args) {
 		Sudoku sudoku;
 		sudoku = new Sudoku(hardGrid);
@@ -135,18 +222,59 @@ public class Sudoku {
 		System.out.println(sudoku.getSolutionText());
 	}
 	
-	
+	/* Helper method that returns the Part in which the 
+	 * coordinates x and y belong on the grid. 
+	 */
+	private static int getPart(int x, int y) {
+		if (x < 3) {
+			if (y < 3) return PART1;
+			else if (y < 6) return PART4;
+			else return PART7;
+		}
+		if (x < 6) {
+			if (y < 3) return PART2;
+			else if (y < 6) return PART5;
+			else return PART8;
+		}
+		else {
+			if (y < 3) return PART3;
+			else if (y < 6) return PART6;
+			else return PART9;
+		}	
+	}
 	
 
 	/**
 	 * Sets up based on the given ints.
 	 */
 	public Sudoku(int[][] ints) {
-		// YOUR CODE HERE
+		puzzleGrid = new Spot[SIZE][SIZE];
+		
+		valInRows = new ArrayList<HashSet<Integer>>(SIZE);
+		valInCols = new ArrayList<HashSet<Integer>>(SIZE);
+		valInParts = new ArrayList<HashSet<Integer>>(SIZE);
+		
+		for (int i = 0; i < SIZE; i++) {
+			valInRows.add(new HashSet<Integer>());
+			valInCols.add(new HashSet<Integer>());
+			valInParts.add(new HashSet<Integer>());
+		}
+		
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				int val = ints[i][j];
+				Spot newSpot = new Spot(i, j, val);
+				puzzleGrid[i][j] = newSpot;
+				
+				if (val != 0) {
+					valInRows.get(i).add(val);
+					valInCols.get(j).add(val);
+					valInParts.get(newSpot.getPartForSpot()).add(val);
+				}
+			}
+		}
 	}
-	
-	
-	
+
 	/**
 	 * Solves the puzzle, invoking the underlying recursive search.
 	 */
