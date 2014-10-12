@@ -7,6 +7,7 @@ import org.junit.*;
 public class BoardTest {
 	Board b;
 	Piece pyr1, pyr2, pyr3, pyr4, s, sRotated;
+	Piece stick1;
 
 	// This shows how to build things in setUp() to re-use
 	// across tests.
@@ -27,6 +28,8 @@ public class BoardTest {
 		sRotated = s.computeNextRotation();
 		
 		b.place(pyr1, 0, 0);
+		
+		stick1 = new Piece(Piece.STICK_STR);
 	}
 	
 	// Check the basic width/height/max after the one placement
@@ -49,7 +52,64 @@ public class BoardTest {
 		assertEquals(1, b.getColumnHeight(0));
 		assertEquals(4, b.getColumnHeight(1));
 		assertEquals(3, b.getColumnHeight(2));
+		assertEquals(3, b.getRowWidth(0));
+		assertEquals(2, b.getRowWidth(1));
+		assertEquals(2, b.getRowWidth(2));
 		assertEquals(4, b.getMaxHeight());
+	}
+	
+	// Test after placing a stick in column 0
+	@Test
+	public void testSample3() {
+		b.commit();
+		int result = b.place(stick1, 0, 0);
+		assertEquals(Board.PLACE_ROW_FILLED, result);
+		
+		b.undo();
+		assertTrue(b.committed);
+		
+		int result2 = b.place(stick1, 0, 1);
+		assertEquals(Board.PLACE_OK, result2);
+		assertEquals(5, b.getColumnHeight(0));
+		assertEquals(4, b.getColumnHeight(1));
+		assertEquals(3, b.getColumnHeight(2));
+		assertEquals(3, b.getRowWidth(0));
+		assertEquals(3, b.getRowWidth(1));
+		assertEquals(3, b.getRowWidth(2));
+		assertEquals(2, b.getRowWidth(3));
+		assertEquals(1, b.getRowWidth(4));
+		assertEquals(5, b.getMaxHeight());
+	}
+	
+	// Test after clearRows()
+	@Test
+	public void testSample4() {
+		b.clearRows();
+		assertEquals(2, b.getColumnHeight(0));
+		assertEquals(1, b.getColumnHeight(1));
+		assertEquals(2, b.getMaxHeight());
+		assertEquals(2, b.getRowWidth(0));
+		assertEquals(1, b.getRowWidth(1));
+	}
+	
+	// Test after undo()
+	@Test
+	public void testSample5() {
+		b.undo();
+		
+		assertEquals(1, b.getColumnHeight(0));
+		assertEquals(4, b.getColumnHeight(1));
+		assertEquals(3, b.getColumnHeight(2));
+		assertEquals(3, b.getRowWidth(0));
+		assertEquals(2, b.getRowWidth(1));
+		assertEquals(2, b.getRowWidth(2));
+		assertEquals(4, b.getMaxHeight());
+	}
+	
+	// Test after undo()
+	@Test
+	public void testSample6() {
+		
 	}
 	
 	// Make  more tests, by putting together longer series of 
