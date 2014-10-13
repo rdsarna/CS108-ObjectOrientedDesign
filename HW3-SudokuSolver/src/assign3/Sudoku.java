@@ -4,21 +4,23 @@ import java.util.*;
 
 /*
  * Encapsulates a Sudoku grid to be solved.
- * CS108 Stanford.
+ * This project is based on the assignment given in CS108 Stanford.
  */
 public class Sudoku {
 	
 	/* "Spot" inner class that represents a single spot
 	 * on the grid of the Sudoku game.
+	 * Each Spot object knows its place on the Sudoku grid as
+	 * it stores the row and column number as fields.
 	 */
-	public class Spot implements Comparable<Spot> {
+	private class Spot implements Comparable<Spot> {
 		
 		/* Properties/fields of each individual Spot */
 		private int row, col;
 		private int value;
 		private int part;
 		
-		/* Stores all possible values for this empty Spot if
+		/* Stores all possible values for a Spot that is empty
 		 * according to the rules of the game */
 		private HashSet<Integer> possibleValues;
 		
@@ -37,7 +39,7 @@ public class Sudoku {
 			possibleValues = new HashSet<>(s.possibleValues);
 		}
 		
-		/* Sets the value for this Spot */
+		/* Sets the value for this Spot on the Solution Grid (solutionGrid) */
 		void setValue(int val) {
 			value = val;
 		}
@@ -73,7 +75,14 @@ public class Sudoku {
 			possibleValues.removeAll(valInParts.get(part));
 			return possibleValues;
 		}
-
+		
+		/* Updates the Spot on the solution grid with the row and col of 
+		 * this Spot with the current value that this spot holds.
+		 */
+		public void updateValueInGrid() {
+			solutionGrid[row][col].value = value;
+		}
+		
 		public int getRow() {
 			return row;
 		}
@@ -126,22 +135,25 @@ public class Sudoku {
 				else return PART9;
 			}	
 		}
-	}
+	} // End of Spot class
 	
-	
+	/* Member variables for the puzzle and solution grids */
 	private Spot[][] puzzleGrid;
 	private Spot[][] solutionGrid;
 	
-	/* List of all the solutions represented as an ArrayList of all
-	 * solved Spots */
+	/* List of all the possible solutions for the puzzle represented as
+	 * an ArrayList of only the Spots that needed to be filled with a 
+	 * solution */
 	private List<ArrayList<Spot>> solutions;
 	
-	/* The ivars to store the state of the grid.
+	/* The ivars to store the current State of the Grid.
 	 * valInRows:- has a HashSet at each index that stores all the filled
 	 * in values for that particular row
 	 * valInCols:- Same as valInRows but for the columns
 	 * valInParts:- For the 3x3 parts of the grid */
 	private ArrayList<HashSet<Integer>> valInRows, valInCols, valInParts;
+	
+	private long timeTakenForSolution;
 	
 	/* Parts of the grid each of size 3x3. Counting from the
 	 * top left to top right then the next row below.
@@ -160,7 +172,6 @@ public class Sudoku {
 	private static final int PART9 = 8;
 		
 	// Provided easy 1 6 grid
-	// (can paste this text into the GUI too)
 	public static final int[][] easyGrid = Sudoku.stringsToGrid(
 	"1 6 4 0 0 0 0 0 2",
 	"2 0 0 4 0 3 9 1 0",
@@ -198,16 +209,6 @@ public class Sudoku {
 	"0 0 0 5 3 0 9 0 0",
 	"0 3 0 0 0 0 0 5 1");
 	
-	public static final int[][] hardGrid2 = Sudoku.stringsToGrid(
-			"3 0 0 0 0 0 0 8 0",
-			"0 0 1 0 9 3 0 0 0",
-			"0 4 0 7 8 0 0 0 3",
-			"0 9 3 8 0 0 0 1 2",
-			"0 0 0 0 4 0 0 0 0",
-			"5 2 0 0 0 6 7 9 0",
-			"6 0 0 0 2 1 0 4 0",
-			"0 0 0 5 3 0 9 0 0",
-			"0 3 0 0 0 0 0 5 1");
 
 	
 	public static final int SIZE = 9;  // size of the whole 9x9 puzzle
@@ -282,7 +283,8 @@ public class Sudoku {
 
 
 	/**
-	 * Sets up based on the given ints.
+	 * Sets up the Sudoku puzzle grid based on the integers given
+	 * as a 2D array or matrix.
 	 */
 	public Sudoku(int[][] ints) {
 		puzzleGrid = new Spot[SIZE][SIZE];
@@ -302,7 +304,8 @@ public class Sudoku {
 		}
 		
 		/* Setting up the Sudoku puzzle grid with the appropriate Spots.
-		 * And adding all the values in the relevant Rows, Cols and Parts */
+		 * And adding all the values in the relevant Rows, Cols and Parts
+		 * to set up the initial state of the grid. */
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				int val = ints[i][j];
@@ -317,35 +320,80 @@ public class Sudoku {
 			}
 		}
 	}
+	
+	/** 
+	 * Sets up the Sudoku puzzle grid based on the given text. The
+	 * text must contain 81 numbers. Whitespaces are ignored.
+	 * If the text is invalid, an exception is thrown.
+	 * @param text string of 81 numbers
+	 */
+	public Sudoku(String text) {
+		this(Sudoku.textToGrid(text));
+	}
 
 	/**
-	 * Solves the puzzle, invoking the underlying recursive search.
+	 * Solves the puzzle and returns the number of solutions.
+	 * @return number of solutions
 	 */
 	public int solve() {
+		/* List of all the empty spots in the puzzleGrid */
 		ArrayList<Spot> emptySpots = getEmptySpotsList();
+		
+		/* List of Spots that will hold the solution values for the puzzleGrid */
 		ArrayList<Spot> solvedSpots = new ArrayList<>();
+		
+		long startTime = System.currentTimeMillis();
 		
 		solveSudoku(emptySpots, solvedSpots, 0);
 		
-		if (solutions.size() == 0)
+		long endTime = System.currentTimeMillis();
+		timeTakenForSolution = endTime - startTime;
+		
+		if (solutions.size() == 0) /* If no solution found */
 			return 0;
 		
+		/* Update the solutionGrid field */
 		fillSolutionGrid();
 		
 		return solutions.size();
 	}
 
-
+	/* Recursive method solves the puzzleGrid
+	 * Strategy:
+	 * =========
+	 * 1. The emptySpots are sorted by the number of possibleValues
+	 * 	  as solutions. So start with the one that has the least possible
+	 * 	  values to check.
+	 * 2. Fill each emptySpot recursively but backtrack immediately when 
+	 * 	  a Spot is reached which cannot be filled by any of its possibleValues.
+	 * 3. Keep adding the filled(solved) spots to the List "solvedSpots"  
+	 * 4. When a complete solution is reached add the current solvedSpots
+	 * 	  list to the list of solutions.
+	 * 5. Return only when all possible solutions have been exhausted.
+	 * 
+	 * Note: index holds the current index of the emptySpots ArrayList.
+	 */
 	private void solveSudoku(ArrayList<Spot> emptySpots,
 			ArrayList<Spot> solvedSpots, int index) {
 		
+		/* Only allow MAX_SOLUTIONS */
+		if (solutions.size() >= Sudoku.MAX_SOLUTIONS)
+			return;
+		
+		/* Base Case: When the current chain of values has arrived at a solution */
 		if (index >= emptySpots.size()) {
 			solutions.add(new ArrayList<>(solvedSpots));
 			return;
 		}
 		
+		/* Current emptySpot that is being considered to be filled */
 		Spot currentSpot = new Spot(emptySpots.get(index));
+		
+		/* Try all the possible values for this empty Spot */
 		for (int value : currentSpot.possibleValues) {
+			
+			/* Check if the value is valid according to the current 
+			 * state of the grid */
 			if (valueIsValid(value, currentSpot)) {
 				currentSpot.setValue(value);
 				updateGridStateWithValue(value, currentSpot);
@@ -363,20 +411,25 @@ public class Sudoku {
 		}
 	}
 
-	
+	/* Fills the solutionGrid field with the first solution that was
+	 * found while solving the puzzle.
+	 */
 	private void fillSolutionGrid() {
 		ArrayList<Spot> solvedSpots = solutions.get(0);
+		
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				solutionGrid[i][j] = new Spot(puzzleGrid[i][j]);
 			}
 		}
 		
-		for (Spot thisSpot : solvedSpots)
-			solutionGrid[thisSpot.getRow()][thisSpot.getCol()].value = thisSpot.value;
+		for (Spot spot : solvedSpots)
+			spot.updateValueInGrid();
 	}
 
-	
+	/* Checks if the given value is valid for the given currentSpot by 
+	 * checking it against all values in this Spot's row, column and Part
+	 */
 	private boolean valueIsValid(int value, Spot currentSpot) {
 		int row = currentSpot.getRow();
 		int col = currentSpot.getCol();
@@ -387,7 +440,10 @@ public class Sudoku {
 				(!valInParts.get(part).contains(value));
 	}
 
-
+	/* Updates the state of the grid. If the given value already exists
+	 * as a part of the grid state, then it is removed otherwise it is
+	 * added to the current state.
+	 */
 	private void updateGridStateWithValue(int value, Spot currentSpot) {
 		HashSet<Integer> valsInCurrentRow = valInRows.get(currentSpot.getRow());
 		HashSet<Integer> valsInCurrentCol = valInCols.get(currentSpot.getCol());
@@ -415,7 +471,7 @@ public class Sudoku {
 	 * return the spots as an ArrayList sorted by the number of possible values
 	 * from low to high.
 	 */
-	public ArrayList<Spot> getEmptySpotsList() {
+	private ArrayList<Spot> getEmptySpotsList() {
 		ArrayList<Spot> result = new ArrayList<>();
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
@@ -430,6 +486,10 @@ public class Sudoku {
 		return result;
 	}
 	
+	/**
+	 * Returns the Solution to the Sudoku puzzle as a String.
+	 * @return solution to the puzzle
+	 */
 	public String getSolutionText() {
 		if (solutions.size() == 0) return "No Solutions";
 		String result = "";
@@ -442,8 +502,13 @@ public class Sudoku {
 		return result;
 	}
 	
+	/**
+	 * Returns the elapsed time spent find the solutions for
+	 * the puzzle
+	 * @return time taken to solve the puzzle
+	 */
 	public long getElapsed() {
-		return 0; // YOUR CODE HERE
+		return timeTakenForSolution;
 	}
 	
 	@Override
@@ -458,10 +523,10 @@ public class Sudoku {
 		return result;
 	}
 	
-
+	/* Just for simple testing */
 	public static void main(String[] args) {
 		Sudoku sudoku;
-		sudoku = new Sudoku(hardGrid);
+		sudoku = new Sudoku(easyGrid);
 		
 		System.out.println(sudoku); // print the raw problem
 		int count = sudoku.solve();

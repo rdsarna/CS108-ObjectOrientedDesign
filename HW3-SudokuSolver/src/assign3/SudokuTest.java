@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import assign3.Sudoku.Spot;
+// import assign3.Sudoku.Spot;
 
 public class SudokuTest {
 	
@@ -18,7 +18,7 @@ public class SudokuTest {
 	public void setUp() throws Exception {
 		sd = new Sudoku(Sudoku.easyGrid);
 		sd2 = new Sudoku(Sudoku.mediumGrid);
-		sd3 = new Sudoku(Sudoku.hardGrid2);
+		sd3 = new Sudoku(Sudoku.hardGrid);
 	}
 	
 	@Test
@@ -29,11 +29,11 @@ public class SudokuTest {
 		System.out.println("elapsed:" + sd.getElapsed() + "ms");
 		System.out.println(sd.getSolutionText());
 		
-//		System.out.println(sd2); // print the raw problem
-//		int count2 = sd2.solve();
-//		System.out.println("solutions:" + count2);
-//		System.out.println("elapsed:" + sd2.getElapsed() + "ms");
-//		System.out.println(sd2.getSolutionText());
+		System.out.println(sd2); // print the raw problem
+		int count2 = sd2.solve();
+		System.out.println("solutions:" + count2);
+		System.out.println("elapsed:" + sd2.getElapsed() + "ms");
+		System.out.println(sd2.getSolutionText());
 		
 		System.out.println(sd3); // print the raw problem
 		int count3 = sd3.solve();
