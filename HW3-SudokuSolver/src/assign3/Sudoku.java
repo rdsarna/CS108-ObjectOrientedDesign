@@ -16,19 +16,19 @@ public class Sudoku {
 	private class Spot implements Comparable<Spot> {
 		
 		/* Properties/fields of each individual Spot */
-		private int row, col;
+		private final int row, col;
 		private int value;
 		private int part;
 		
 		/* Stores all possible values for a Spot that is empty
 		 * according to the rules of the game */
-		private HashSet<Integer> possibleValues;
+		private Set<Integer> possibleValues;
 		
-		Spot(int x, int y, int val) {
-			row = x;
-			col = y;
-			value = val;
-			part = getPart(x, y);
+		Spot(int row, int col, int value) {
+			this.row = row;
+			this.col = col;
+			this.value = value;
+			part = getPart(row, col);
 		
 			possibleValues = new HashSet<>();
 		}
@@ -62,7 +62,7 @@ public class Sudoku {
 		/* Returns a HashSet of all legal values that can be 
 		 * filled in this Spot.
 		 */
-		HashSet<Integer> getPossibleValues() {
+		Set<Integer> getPossibleValues() {
 			if (value != 0) return null;
 
 			/* temporarily assign all 9 numbers */
@@ -79,15 +79,17 @@ public class Sudoku {
 		/* Updates the Spot on the solution grid with the row and col of 
 		 * this Spot with the current value that this spot holds.
 		 */
-		public void updateValueInGrid() {
+		void updateValueInGrid() {
 			solutionGrid[row][col].value = value;
 		}
 		
-		public int getRow() {
+		/* Returns the row number this Spot belongs to */
+		int getRow() {
 			return row;
 		}
 
-		public int getCol() {
+		/* Returns the column number this Spot belongs to */
+		int getCol() {
 			return col;
 		}
 		
@@ -96,6 +98,7 @@ public class Sudoku {
 			return this.possibleValues.size() - that.possibleValues.size();
 		}
 		
+		/* Two Spots are equal if their row and column number are equal */
 		@Override
 		public boolean equals(Object o) {
 			if (o == null) return false;
@@ -112,13 +115,13 @@ public class Sudoku {
 		
 		@Override
 		public String toString() {
-			return value + "";
+			return String.valueOf(value);
 		}
 		
 		/* Helper method that returns the Part in which the 
 		 * coordinates x and y belong on the grid. 
 		 */
-		private int getPart(int x, int y) {
+		private final int getPart(int x, int y) {
 			if (x < 3) {
 				if (y < 3) return PART1;
 				else if (y < 6) return PART4;
@@ -138,20 +141,20 @@ public class Sudoku {
 	} // End of Spot class
 	
 	/* Member variables for the puzzle and solution grids */
-	private Spot[][] puzzleGrid;
-	private Spot[][] solutionGrid;
+	private final Spot[][] puzzleGrid;
+	private final Spot[][] solutionGrid;
 	
 	/* List of all the possible solutions for the puzzle represented as
 	 * an ArrayList of only the Spots that needed to be filled with a 
 	 * solution */
-	private List<ArrayList<Spot>> solutions;
+	private final List<ArrayList<Spot>> solutions;
 	
 	/* The ivars to store the current State of the Grid.
 	 * valInRows:- has a HashSet at each index that stores all the filled
 	 * in values for that particular row
 	 * valInCols:- Same as valInRows but for the columns
 	 * valInParts:- For the 3x3 parts of the grid */
-	private ArrayList<HashSet<Integer>> valInRows, valInCols, valInParts;
+	private List<HashSet<Integer>> valInRows, valInCols, valInParts;
 	
 	private long timeTakenForSolution;
 	
@@ -292,9 +295,9 @@ public class Sudoku {
 		
 		solutions = new ArrayList<>();
 		
-		valInRows = new ArrayList<HashSet<Integer>>(SIZE);
-		valInCols = new ArrayList<HashSet<Integer>>(SIZE);
-		valInParts = new ArrayList<HashSet<Integer>>(SIZE);
+		valInRows = new ArrayList<>(SIZE);
+		valInCols = new ArrayList<>(SIZE);
+		valInParts = new ArrayList<>(SIZE);
 		
 		/* Initializing all the HashSets */
 		for (int i = 0; i < SIZE; i++) {
@@ -337,10 +340,10 @@ public class Sudoku {
 	 */
 	public int solve() {
 		/* List of all the empty spots in the puzzleGrid */
-		ArrayList<Spot> emptySpots = getEmptySpotsList();
+		List<Spot> emptySpots = getEmptySpotsList();
 		
 		/* List of Spots that will hold the solution values for the puzzleGrid */
-		ArrayList<Spot> solvedSpots = new ArrayList<>();
+		List<Spot> solvedSpots = new ArrayList<>();
 		
 		long startTime = System.currentTimeMillis();
 		
@@ -373,8 +376,8 @@ public class Sudoku {
 	 * 
 	 * Note: index holds the current index of the emptySpots ArrayList.
 	 */
-	private void solveSudoku(ArrayList<Spot> emptySpots,
-			ArrayList<Spot> solvedSpots, int index) {
+	private void solveSudoku(List<Spot> emptySpots,
+			List<Spot> solvedSpots, int index) {
 		
 		/* Only allow MAX_SOLUTIONS */
 		if (solutions.size() >= Sudoku.MAX_SOLUTIONS)
@@ -415,7 +418,7 @@ public class Sudoku {
 	 * found while solving the puzzle.
 	 */
 	private void fillSolutionGrid() {
-		ArrayList<Spot> solvedSpots = solutions.get(0);
+		List<Spot> solvedSpots = solutions.get(0);
 		
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
@@ -445,9 +448,9 @@ public class Sudoku {
 	 * added to the current state.
 	 */
 	private void updateGridStateWithValue(int value, Spot currentSpot) {
-		HashSet<Integer> valsInCurrentRow = valInRows.get(currentSpot.getRow());
-		HashSet<Integer> valsInCurrentCol = valInCols.get(currentSpot.getCol());
-		HashSet<Integer> valsInCurrentPart = valInParts.get(currentSpot.getPartForSpot());
+		Set<Integer> valsInCurrentRow = valInRows.get(currentSpot.getRow());
+		Set<Integer> valsInCurrentCol = valInCols.get(currentSpot.getCol());
+		Set<Integer> valsInCurrentPart = valInParts.get(currentSpot.getPartForSpot());
 		
 		if (valsInCurrentRow.contains(value))
 			valsInCurrentRow.remove(value);
@@ -471,8 +474,8 @@ public class Sudoku {
 	 * return the spots as an ArrayList sorted by the number of possible values
 	 * from low to high.
 	 */
-	private ArrayList<Spot> getEmptySpotsList() {
-		ArrayList<Spot> result = new ArrayList<>();
+	private List<Spot> getEmptySpotsList() {
+		List<Spot> result = new ArrayList<>();
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				Spot thisSpot = puzzleGrid[i][j];
