@@ -28,20 +28,24 @@ public class Sudoku {
 			this.row = row;
 			this.col = col;
 			this.value = value;
-			part = getPart(row, col);
+			this.part = getPart(row, col);
 		
 			possibleValues = new HashSet<>();
 		}
 		
 		Spot(Spot s) {
 			this(s.row, s.col, s.value);
-			part = s.part;
+			this.part = s.part;
 			possibleValues = new HashSet<>(s.possibleValues);
 		}
 		
 		/* Sets the value for this Spot on the Solution Grid (solutionGrid) */
 		void setValue(int val) {
 			value = val;
+		}
+		
+		void setEmpty() {
+			value = 0;
 		}
 		
 		/* Returns the value of this Spot */
@@ -116,27 +120,16 @@ public class Sudoku {
 		@Override
 		public String toString() {
 			return String.valueOf(value);
+//			return possibleValues.toString();
 		}
 		
 		/* Helper method that returns the Part in which the 
 		 * coordinates x and y belong on the grid. 
 		 */
-		private final int getPart(int x, int y) {
-			if (x < 3) {
-				if (y < 3) return PART1;
-				else if (y < 6) return PART4;
-				else return PART7;
-			}
-			if (x < 6) {
-				if (y < 3) return PART2;
-				else if (y < 6) return PART5;
-				else return PART8;
-			}
-			else {
-				if (y < 3) return PART3;
-				else if (y < 6) return PART6;
-				else return PART9;
-			}	
+		private int getPart(int x, int y) {
+		    int xGroup = x / 3;
+		    int yGroup = y / 3;
+		    return xGroup * 3 + yGroup;
 		}
 	} // End of Spot class
 	
@@ -401,13 +394,13 @@ public class Sudoku {
 				currentSpot.setValue(value);
 				updateGridStateWithValue(value, currentSpot);
 				
-				solvedSpots.add(currentSpot);
+				solvedSpots.add(new Spot(currentSpot));
 				
 				int newIndex = index + 1;
 				solveSudoku(emptySpots, solvedSpots, newIndex);
 				
 				/* Backtrack when the method above returns */
-				emptySpots.get(index).setValue(0);
+				emptySpots.get(index).setEmpty();
 				solvedSpots.remove(currentSpot);
 				updateGridStateWithValue(value, currentSpot);
 			}
@@ -529,7 +522,7 @@ public class Sudoku {
 	/* Just for simple testing */
 	public static void main(String[] args) {
 		Sudoku sudoku;
-		sudoku = new Sudoku(easyGrid);
+		sudoku = new Sudoku(hardGrid);
 		
 		System.out.println(sudoku); // print the raw problem
 		int count = sudoku.solve();

@@ -21,8 +21,8 @@ public class SudokuFrame extends JFrame {
 	public SudokuFrame() {
 		super("Sudoku Solver");
 
-		textAreaPuzzle = new JTextArea(15, 25);
-		textAreaSolution = new JTextArea(15, 30);
+		textAreaPuzzle = new JTextArea(15, 32);
+		textAreaSolution = new JTextArea(15, 35);
 		
 		textAreaPuzzle.setBorder(new TitledBorder("Puzzle"));
 		textAreaSolution.setBorder(new TitledBorder("Solution"));
