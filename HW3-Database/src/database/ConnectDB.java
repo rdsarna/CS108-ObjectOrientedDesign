@@ -2,6 +2,8 @@ package database;
 
 import java.sql.*;
 
+import assign3.MyDBInfo;
+
 public class ConnectDB {
 	
 	static String account = MyDBInfo.MYSQL_USERNAME;
