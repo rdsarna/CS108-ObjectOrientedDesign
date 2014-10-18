@@ -161,6 +161,23 @@ public class Entry {
 		result.append((entry.population.isEmpty()) ? 
 				"" : " population " + populationOperator + " " + entry.population);
 	}
+	
+	/**
+	 * Returns true iff the given object is an Entry with all properties
+	 * equal to this Entry object's properties.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (!(o instanceof Entry)) return false;
+		Entry that = (Entry) o;
+		
+		return this.metropolis.equals(that.metropolis) &&
+				this.continent.equals(that.continent) &&
+				this.population.equals(that.population) &&
+				this.populationCriteria.equals(that.populationCriteria) &&
+				this.matchCriteria.equals(that.matchCriteria);
+	}
 
 	
 	/* Returns the operator equivalent to the populationCriteria given */
