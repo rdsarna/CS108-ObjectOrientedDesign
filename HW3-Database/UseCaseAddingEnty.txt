@@ -1,0 +1,10 @@
+1. User enters the data in all 3 fields.
+	1.1 User enters no data.
+	    1.1.1 Nothing happens. The table displays nothing. No data is added.
+	1.2 User enters partial data. 
+	    1.2.1 Only the fields supplied are added.
+	    1.2.2 Rest of the fields are left NULL.
+2. User presses the "ADD" button.
+3. An entry is added to the back end MYSQL database.
+4. The table view is reset.
+5. Only the new entry is displayed in the table view.
