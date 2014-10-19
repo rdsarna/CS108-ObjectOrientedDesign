@@ -3,13 +3,23 @@ package assign3;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * A class to retrieve data from a back end SQL database.
+ * Used JDBC as the connector and a MySQL database as the
+ * source of the data.
+ * This class doesn't store the data itself. Instead, it only
+ * retrieves the data and passes it to any class that calls
+ * the appropriate methods.
+ * 
+ * @author Ratul
+ */
 public class DataClass {
 
-	static String account = MyDBInfo.MYSQL_USERNAME;
-	static String password = MyDBInfo.MYSQL_PASSWORD;
-	static String server = MyDBInfo.MYSQL_DATABASE_SERVER;
-	static String database = MyDBInfo.MYSQL_DATABASE_NAME;
-	static String table = "metropolises";
+	private static String account = MyDBInfo.MYSQL_USERNAME;
+	private static String password = MyDBInfo.MYSQL_PASSWORD;
+	private static String server = MyDBInfo.MYSQL_DATABASE_SERVER;
+	private static String database = MyDBInfo.MYSQL_DATABASE_NAME;
+	private static String table = "metropolises";
 	
 	private static final String DEFAULT_STATEMENT = "SELECT * FROM " + table;
 
@@ -59,9 +69,12 @@ public class DataClass {
 	 * query the database
 	 */
 	public void retrieveData(Entry entry, List<List<String>> data) {
+		/* Clear the existing data to get new data based on the current query */
 		data.clear();
+		
 		try {
 			rs = stmt.executeQuery(entry.getQueryStatement(table));
+			
 			convertResultSetToList(rs, data);
 		} catch (SQLException se) {
 			System.out.println("SQL Exception");
@@ -77,24 +90,40 @@ public class DataClass {
 	 * in it. 
 	 * a List of Strings.
 	 * @param entry The object based on which a new row is inserted
+	 * @return returns the row index where the new row is added in the table.
+	 * Or -1 if row is not inserted due to invalid information given
 	 */
-	public void insertData(Entry entry, List<List<String>> data) {
+	public int insertData(Entry entry, List<List<String>> data) {
+		int rowIndex = -1;
+		
+		/* Clear the existing data to get new data based on the current query */
 		data.clear();
-		List<String> list = new ArrayList<>();
+		/* List to store the single data in the row added */
+		List<String> rowList = new ArrayList<>();
+		
 		try {
 			String insertStatement = entry.getInsertStatement(table);
-			if (insertStatement == null) return;
+			
+			if (insertStatement == null) return rowIndex;
+			
 			stmt.executeUpdate(insertStatement);
 			rs = stmt.executeQuery(DEFAULT_STATEMENT);
 			rs.last();
+			
+			rowIndex = rs.getRow();
+			
 			for (int i = 1; i <= metadata.getColumnCount(); i++)
-				list.add(rs.getString(i));
-			data.add(list);
+				rowList.add(rs.getString(i));
+			
+			data.add(rowList);
+			
 			rs.first();
 		} catch (SQLException se) {
 			System.out.println("Insert Error");
 			se.getStackTrace();
 		}
+		
+		return rowIndex;
 	}
 	
 	

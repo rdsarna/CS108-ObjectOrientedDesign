@@ -78,11 +78,11 @@ public class Entry {
 	 * statement.<br>
 	 * <br>
 	 * For example, if the Entry was created with:<br>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;Entry e = new Entry("", "", "200000",  Population.LARGER, Match.EXACT);<br>
+	 * Entry e = new Entry("", "", "200000",  Population.LARGER, Match.EXACT);<br>
 	 * then the call<br>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;e.getQueryStatement(metropolises)<br>
+	 * e.getQueryStatement(metropolises)<br>
 	 * will return<br>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"SELECT * FROM metropolises WHERE population > 200000;"<br>
+	 * "SELECT * FROM metropolises WHERE population > 200000;"<br>
 	 * 
 	 * @param tableName Name of the table from which data is to be queried
 	 * @return SQL query statement according to the state of this object
@@ -106,11 +106,11 @@ public class Entry {
 	 * If any of the fields are empty then null is returned.<br>
 	 * <br>
 	 * For example, if the entry was created with:<br>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;Entry e = new Entry("Mumbai", "Asia", "200000");<br>
+	 * Entry e = new Entry("Mumbai", "Asia", "200000");<br>
 	 * then the call<br>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;e.getInsertStatement(metropolises)<br>
+	 * e.getInsertStatement(metropolises)<br>
 	 * will return<br>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"INSERT INTO metropolises VALUES("Mumbai", "Asia", "200000");"<br>
+	 * "INSERT INTO metropolises VALUES("Mumbai", "Asia", "200000");"<br>
 	 * <br>
 	 * @param tableName Name of the table into which data is to be inserted
 	 * @return SQL insert statement according to the state of this object OR
