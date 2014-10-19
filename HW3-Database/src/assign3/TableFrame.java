@@ -25,16 +25,16 @@ public class TableFrame extends JFrame {
 	private DBTableModel model;
 	private JTable table;
 	
-	JButton addBttn;
-	JButton searchBttn;
-	JLabel metropolisLabel;
-	JTextField metropolisField;
-	JLabel continentLabel;
-	JTextField continentField;
-	JLabel populationLabel;
-	JTextField populationField;
-	JComboBox populationCriteria;
-	JComboBox matchCriteria;
+	private JButton addBttn;
+	private JButton searchBttn;
+	private JLabel metropolisLabel;
+	private JTextField metropolisField;
+	private JLabel continentLabel;
+	private JTextField continentField;
+	private JLabel populationLabel;
+	private JTextField populationField;
+	private JComboBox populationCriteria;
+	private JComboBox matchCriteria;
 	
 	final static String POPULATION_LARGER = "Population Larger Than";
 	final static String POPULATION_SMALLER = "Population Smaller Than";
