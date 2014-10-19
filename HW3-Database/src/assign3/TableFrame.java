@@ -138,11 +138,9 @@ public class TableFrame extends JFrame {
 	}
 
 	
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception ignored) { }
-		TableFrame tf = new TableFrame();
+	public static void main(String[] args) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		new TableFrame();
 	}
 
 }

@@ -16,7 +16,7 @@ public class Entry {
 	public enum Population {
 		LARGER,
 		SMALLER,
-		EQUAL;
+		EQUAL
 	}
 	
 	/**
@@ -25,7 +25,7 @@ public class Entry {
 	 */
 	public enum Match {
 		EXACT,
-		PARTIAL;
+		PARTIAL
 	}
 
 	private String metropolis;

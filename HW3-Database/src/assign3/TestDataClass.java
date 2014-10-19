@@ -11,13 +11,13 @@ import assign3.Entry.Match;
 import assign3.Entry.Population;
 
 public class TestDataClass {
-	DataClass dc;
+	DataBaseConnection dc;
 	Entry ePartial, eOnlyPopulation, eNoPopulation, eAll;
 	Entry e1, e2;
 
 	@Before
 	public void setUp() throws Exception {
-		dc = new DataClass();
+		dc = new DataBaseConnection();
 		eOnlyPopulation = new Entry("", "", "20000000", Population.LARGER, Match.EXACT);
 		ePartial = new Entry("San", "", "", Population.SMALLER, Match.PARTIAL);
 		eAll = new Entry("", "", "", Population.LARGER, Match.PARTIAL);

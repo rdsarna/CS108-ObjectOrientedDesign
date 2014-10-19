@@ -2,6 +2,8 @@ package assign3;
 
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class to retrieve data from a back end SQL database.
@@ -13,53 +15,27 @@ import java.util.*;
  * 
  * @author Ratul
  */
-public class DataClass {
+public class DataBaseConnection {
 
-	private static String account = MyDBInfo.MYSQL_USERNAME;
-	private static String password = MyDBInfo.MYSQL_PASSWORD;
-	private static String server = MyDBInfo.MYSQL_DATABASE_SERVER;
-	private static String database = MyDBInfo.MYSQL_DATABASE_NAME;
-	private static String table = "metropolises";
+	public static final String MYSQL_USERNAME = "root";
+	public static final String MYSQL_PASSWORD = "";
+	public static final String MYSQL_DATABASE_SERVER = "localhost";
+	public static final String MYSQL_DATABASE_NAME = "c_cs108_ratulsarna";
+	private static final String TABLE = "metropolises";
 	
-	private static final String DEFAULT_STATEMENT = "SELECT * FROM " + table;
+	private static final String DEFAULT_STATEMENT = "SELECT * FROM " + TABLE;
 
-	private Connection connection;
-	private Statement stmt;
-	private ResultSet rs;
-	private ResultSetMetaData metadata;
-	private List<String> columnNames;
+	private final Connection connection = getConnection();
+	private final ResultSetMetaData metadata = getMetadata();
+	private final List<String> columnNames = getColumnNames();
 	
 	
-	/**
-	 * Constructs a DataClass object and connects to the back end 
-	 * database.
-	 */
-	public DataClass() {
-		columnNames = new ArrayList<>();
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection(
-					"jdbc:mysql://" + server, account, password);
-			stmt = connection.createStatement();
-			stmt.executeQuery("USE " + database);
-			
-			rs = stmt.executeQuery(DEFAULT_STATEMENT);
-			metadata = rs.getMetaData();
-			int count = metadata.getColumnCount();
-			for (int i = 1; i <= count; i++) {
-				columnNames.add(metadata.getColumnLabel(i));
-			}
-			
-		} catch (ClassNotFoundException e) {
-			System.out.println("Class Exception");
-			e.getStackTrace();
-		} catch (SQLException se) {
-			System.out.println("SQL Exception");
-			se.getStackTrace();
-		}
+	private void logException(String message, Exception e) {
+		Logger logger = Logger.getAnonymousLogger();
+		logger.log(Level.SEVERE, message, e);
 	}
-	
-	
+
+
 	/**
 	 * Retrieves data from the database based on the given Entry object.
 	 * Uses the properties of Entry object to determine the conditions for
@@ -73,12 +49,13 @@ public class DataClass {
 		data.clear();
 		
 		try {
-			rs = stmt.executeQuery(entry.getQueryStatement(table));
+			PreparedStatement stmt = 
+					connection.prepareStatement(entry.getQueryStatement(TABLE));
+			ResultSet rs = stmt.executeQuery();
 			
 			convertResultSetToList(rs, data);
-		} catch (SQLException se) {
-			System.out.println("SQL Exception");
-			se.getStackTrace();
+		} catch (SQLException e) {
+			logException("Error retrieving data", e);
 		}
 	}
 	
@@ -102,12 +79,14 @@ public class DataClass {
 		List<String> rowList = new ArrayList<>();
 		
 		try {
-			String insertStatement = entry.getInsertStatement(table);
+			String insertStatement = entry.getInsertStatement(TABLE);
 			
 			if (insertStatement == null) return rowIndex;
 			
-			stmt.executeUpdate(insertStatement);
-			rs = stmt.executeQuery(DEFAULT_STATEMENT);
+			PreparedStatement stmt = 
+					connection.prepareStatement(entry.getQueryStatement(TABLE));
+			stmt.executeUpdate();
+			ResultSet rs = stmt.executeQuery(DEFAULT_STATEMENT);
 			rs.last();
 			
 			rowIndex = rs.getRow();
@@ -118,9 +97,8 @@ public class DataClass {
 			data.add(rowList);
 			
 			rs.first();
-		} catch (SQLException se) {
-			System.out.println("Insert Error");
-			se.getStackTrace();
+		} catch (SQLException e) {
+			logException("Error adding data", e);
 		}
 		
 		return rowIndex;
@@ -145,6 +123,50 @@ public class DataClass {
 				row.add(rs.getString(i));
 			list.add(row);
 		}
+	}
+	
+
+	private List<String> getColumnNames() {
+		List<String> result = new ArrayList<>();
+		try {
+			int count = metadata.getColumnCount();
+			for (int i = 1; i <= count; i++)
+				result.add(metadata.getColumnLabel(i));
+		} catch (SQLException e) {
+			logException("Error retrieving data", e);
+		}
+		return result;
+	}
+
+
+	private ResultSetMetaData getMetadata() {
+		try {
+			PreparedStatement stmt = connection.prepareStatement("USE " + MYSQL_DATABASE_NAME);
+			stmt.executeQuery();
+			stmt = connection.prepareStatement(DEFAULT_STATEMENT);
+			ResultSet rs = stmt.executeQuery();
+			ResultSetMetaData metadata = rs.getMetaData();
+			return metadata;
+			
+		} catch (SQLException e) {
+			logException("Error retrieving data", e);
+		}
+		return null;
+	}
+
+
+	private Connection getConnection() {
+		Connection con = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection(
+					"jdbc:mysql://" + MYSQL_DATABASE_SERVER, MYSQL_USERNAME, MYSQL_PASSWORD);
+		} catch (ClassNotFoundException e) {
+			logException("Could not connect to the Database", e);
+		} catch (SQLException e) {
+			logException("Could not connect to the Database", e);
+		}
+		return con;
 	}
 	
 }

@@ -17,11 +17,10 @@ public class DBTableModel extends AbstractTableModel {
 	
 	private List<String> colNames;	// defines the number of cols
 	private List<List<String>> data;	// one List for each row
-	DataClass dataFromDB;
-	
+	private DataBaseConnection dataFromDB;
 	
 	public DBTableModel() {
-		dataFromDB = new DataClass();
+		dataFromDB = new DataBaseConnection();
 		colNames = dataFromDB.retrieveColumnNames();
 		data = new ArrayList<>();
 	}
@@ -49,7 +48,7 @@ public class DBTableModel extends AbstractTableModel {
 	 * @return the number of columns in the model
 	 */
 	public int getColumnCount() {
-		return(colNames.size());
+		return colNames.size();
 	}
 	
 	/**
@@ -58,7 +57,7 @@ public class DBTableModel extends AbstractTableModel {
 	 * @return the number of rows in the model
 	 */
 	public int getRowCount() {
-		return(data.size());
+		return data.size();
 	}
 	
 	/**
@@ -68,12 +67,12 @@ public class DBTableModel extends AbstractTableModel {
 	 * @return the value Object at the specified cell
 	 */
 	public Object getValueAt(int row, int col) {
-		List rowList = data.get(row);
+		List<String> rowList = data.get(row);
 		Object result = null;
 		if (col<rowList.size()) {
 			result = rowList.get(col);
 		}
-		return(result);
+		return result;
 	}
 	
 	
