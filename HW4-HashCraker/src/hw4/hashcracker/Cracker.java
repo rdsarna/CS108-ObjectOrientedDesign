@@ -1,9 +1,36 @@
 package hw4.hashcracker;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class Cracker {
 	// Array of chars used to produce strings
 	public static final char[] CHARS = "abcdefghijklmnopqrstuvwxyz0123456789.,-!".toCharArray();	
 	
+	public static void main(String[] args) {
+		Cracker cracker = new Cracker();
+		if (args.length == 1) {
+			String hashValue = cracker.generateHashValue(args[0]);
+			System.out.println(hashValue);
+		}
+		else {
+			System.err.println("Illegal number of arguments");
+			System.exit(0);
+		}
+	}
+	
+	private String generateHashValue(String string) {
+		byte[] output = null;
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA");
+			md.update(string.getBytes());
+			output = md.digest();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return hexToString(output);
+	}
+
 	/*
 	 Given a byte[] array, produces a hex String,
 	 such as "234a6f". with 2 chars for each byte in the array.
