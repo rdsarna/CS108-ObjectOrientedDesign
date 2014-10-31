@@ -2,24 +2,70 @@ package hw4.hashcracker;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class Cracker {
 	// Array of chars used to produce strings
 	public static final char[] CHARS = "abcdefghijklmnopqrstuvwxyz0123456789.,-!".toCharArray();	
+	private static int start, stop;
+	private static int numCharLimit;
+	private static CountDownLatch countDownLatch;
 	
 	public static void main(String[] args) {
-		Cracker cracker = new Cracker();
 		if (args.length == 1) {
-			String hashValue = cracker.generateHashValue(args[0]);
+			String hashValue = generateHashValue(args[0]);
 			System.out.println(hashValue);
+		}
+		else if (args.length == 3) {
+			String hashGiven = args[0];
+			numCharLimit = Integer.parseInt(args[1]);
+			int numThreads = Integer.parseInt(args[2]);
+			
+			displayPasswords(hashGiven, numCharLimit,
+					 numThreads);
 		}
 		else {
 			System.err.println("Illegal number of arguments");
 			System.exit(0);
 		}
+		
+		System.out.println("all done");
 	}
 	
-	private String generateHashValue(String string) {
+	private static void displayPasswords(String hashValue, int numCharLimit, int numThreads) {
+		countDownLatch = new CountDownLatch(numThreads);
+		int numCharsPerThread = CHARS.length / numThreads;
+		
+		start = 0;
+		stop = numCharsPerThread;
+		
+		for (int i = 0; i < numThreads; i++) {
+			char[] firstLetters;
+			if (i != numThreads-1) {
+				firstLetters = Arrays.copyOfRange(CHARS, start, stop);
+				
+			} else {
+				firstLetters = Arrays.copyOfRange(CHARS, start, CHARS.length);
+			}
+			CrackHash crackJob = 
+					new CrackHash(firstLetters, numCharLimit, hashValue, countDownLatch);
+			Thread thread = new Thread(crackJob);
+			thread.start();
+			start = stop;
+			stop += numCharsPerThread;
+		}
+				
+		
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String generateHashValue(String string) {
 		byte[] output = null;
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA");
@@ -30,7 +76,7 @@ public class Cracker {
 		}
 		return hexToString(output);
 	}
-
+	
 	/*
 	 Given a byte[] array, produces a hex String,
 	 such as "234a6f". with 2 chars for each byte in the array.
