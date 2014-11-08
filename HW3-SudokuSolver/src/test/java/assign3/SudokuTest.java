@@ -1,9 +1,5 @@
 package assign3;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,9 +12,9 @@ public class SudokuTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		sd = new Sudoku(Sudoku.easyGrid);
-		sd2 = new Sudoku(Sudoku.mediumGrid);
-		sd3 = new Sudoku(Sudoku.hardGrid);
+		sd = new Sudoku(SudokuGridFactory.getEasyGrid());
+		sd2 = new Sudoku(SudokuGridFactory.getMediumGrid());
+		sd3 = new Sudoku(SudokuGridFactory.getHardGrid());
 	}
 	
 	@Test

@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /* Class that represents a single spot
  * on the grid of the Sudoku game.
@@ -11,8 +13,6 @@ import java.util.Set;
  * it stores the row and column number as fields.
  */
 public class Spot implements Comparable<Spot> {
-
-    /* Properties/fields of each individual Spot */
     private final int row, col;
     private int value;
     private int part;
@@ -36,24 +36,6 @@ public class Spot implements Comparable<Spot> {
         possibleValues = new HashSet<>(s.possibleValues);
     }
 
-    /* Sets the value for this Spot on the Solution Grid (solutionGrid) */
-    void setValue(int val) {
-        value = val;
-    }
-
-    void setEmpty() {
-        value = 0;
-    }
-
-    /* Returns the value of this Spot */
-    int getValue() {
-        return value;
-    }
-
-    /* Returns the part of the grid where this Spot belongs */
-    int getPartForSpot() {
-        return part;
-    }
 
     /* Returns true iff this Spot is not filled */
     boolean isEmpty() {
@@ -81,15 +63,6 @@ public class Spot implements Comparable<Spot> {
 		return Optional.of(possibleValues);
 	}
 
-    /* Returns the row number this Spot belongs to */
-    int getRow() {
-        return row;
-    }
-
-    /* Returns the column number this Spot belongs to */
-    int getCol() {
-        return col;
-    }
 
     @Override
     public int compareTo(Spot that) {
@@ -99,30 +72,51 @@ public class Spot implements Comparable<Spot> {
     /* Two Spots are equal if their row and column number are equal */
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (!(o instanceof Spot)) return false;
-
-        Spot that = (Spot) o;
-        return this.row == that.row && this.col == that.col;
+		return EqualsBuilder.reflectionEquals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return possibleValues.size() * 25;
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public String toString() {
         return String.valueOf(value);
-//			return possibleValues.toString();
     }
 
     /* Helper method that returns the Part in which the
      * coordinates x and y belong on the grid.
      */
     private int getPart(int x, int y) {
-        int xGroup = x / 3;
-        int yGroup = y / 3;
-        return xGroup * 3 + yGroup;
+        int partitionSize = (int) Math.sqrt(Sudoku.SIZE);
+        int xGroup = x / partitionSize;
+        int yGroup = y / partitionSize;
+        return xGroup * partitionSize + yGroup;
     }
-} // End of Spot class
+
+    /* Returns the row number this Spot belongs to */
+    int getRow() {
+        return row;
+    }
+    /* Returns the column number this Spot belongs to */
+    int getCol() {
+        return col;
+    }
+    /* Sets the value for this Spot on the Solution Grid (solutionGrid) */
+    void setValue(int val) {
+        value = val;
+    }
+    /* Returns the part of the grid where this Spot belongs */
+    int getPartForSpot() {
+        return part;
+    }
+
+    void setEmpty() {
+        value = 0;
+    }
+    /* Returns the value of this Spot */
+    int getValue() {
+        return value;
+    }
+}
