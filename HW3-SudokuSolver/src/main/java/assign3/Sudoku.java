@@ -1,6 +1,7 @@
 package assign3;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /*
  * Encapsulates a Sudoku grid to be solved.
@@ -35,51 +36,6 @@ public class Sudoku {
 	
 	public static final int SIZE = 9;  // size of the sudoku puzzle, always a perfect square
 	public static final int MAX_SOLUTIONS = 100;
-
-	/**
-	 * Given a single string containing 81 numbers, returns a 9x9 grid.
-	 * Skips all the non-numbers in the text.
-	 * (provided utility)
-	 * @param text string of 81 numbers
-	 * @return grid
-	 */
-	public static int[][] textToGrid(String text) {
-		int[] nums = stringToInts(text);
-		if (nums.length != SIZE*SIZE) {
-			throw new RuntimeException(String.format("Needed %d numbers, but got : %d", SIZE*SIZE, nums.length));
-		}
-		
-		int[][] result = new int[SIZE][SIZE];
-		int count = 0;
-		for (int row = 0; row<SIZE; row++) {
-			for (int col=0; col<SIZE; col++) {
-				result[row][col] = nums[count];
-				count++;
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * Given a string containing digits, like "1 23 4",
-	 * returns an int[] of those digits {1 2 3 4}.
-	 * (provided utility)
-	 * @param string string containing ints
-	 * @return array of ints
-	 */
-	public static int[] stringToInts(String string) {
-		int[] a = new int[string.length()];
-		int found = 0;
-		for (int i=0; i<string.length(); i++) {
-			if (Character.isDigit(string.charAt(i))) {
-				a[found] = Integer.parseInt(string.substring(i, i+1));
-				found++;
-			}
-		}
-		int[] result = new int[found];
-		System.arraycopy(a, 0, result, 0, found);
-		return result;
-	}
 
 
 	/**
@@ -128,7 +84,7 @@ public class Sudoku {
 	 * @param text string of 81 numbers
 	 */
 	public Sudoku(String text) {
-		this(Sudoku.textToGrid(text));
+		this(SudokuMakerUtils.textToGrid(text));
 	}
 
 	/**
@@ -224,9 +180,8 @@ public class Sudoku {
 				solutionGrid[i][j] = new Spot(puzzleGrid[i][j]);
 			}
 		}
-		
-		for (Spot spot : solvedSpots)
-			updateValueInGrid(spot);
+
+		solvedSpots.stream().forEach(spot -> updateValueInGrid(spot));
 	}
 
 	/* Checks if the given value is valid for the given currentSpot by 
@@ -293,15 +248,8 @@ public class Sudoku {
 	 * @return solution to the puzzle
 	 */
 	public String getSolutionText() {
-		if (solutions.size() == 0) return "No Solutions";
-		String result = "";
-		for (Spot[] sArr : solutionGrid) {
-			result += "[";
-			for (Spot s : sArr)
-				result += s.toString() + ", ";
-			result += "] \n";
-		}
-		return result;
+		if (solutions.size() == 0) { return "No Solutions"; }
+		return getStringRepresentationOfPuzzle(solutionGrid);
 	}
 	
 	/**
@@ -315,13 +263,19 @@ public class Sudoku {
 	
 	@Override
 	public String toString() {
-		String result = "";
+		return getStringRepresentationOfPuzzle(puzzleGrid);
+	}
+
+	private String getStringRepresentationOfPuzzle(Spot [][] puzzleGrid) {
+		StringBuilder result = new StringBuilder();
 		for (Spot[] sArr : puzzleGrid) {
-			result += "[";
-			for (Spot s : sArr)
-				result += s.toString() + ", ";
-			result += "] \n";
+			result.append("[");
+			String commaSeparatedRowOfSpots = Arrays.asList(sArr).stream()
+					.map(spot -> spot.toString())
+					.collect(Collectors.joining(", "));
+			result.append(commaSeparatedRowOfSpots);
+			result.append("] \n");
 		}
-		return result;
+		return result.toString();
 	}
 }

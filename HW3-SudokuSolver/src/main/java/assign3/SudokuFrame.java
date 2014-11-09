@@ -86,7 +86,7 @@ public class SudokuFrame extends JFrame {
 	
 	private void createNewSudokuPuzzle() {
 		try {
-			int[][] ints = Sudoku.textToGrid(puzzleString);
+			int[][] ints = SudokuMakerUtils.textToGrid(puzzleString);
 			puzzle = new Sudoku(ints);
 		} catch (Exception e) {
 			textAreaSolution.setText("Parsing Error");
